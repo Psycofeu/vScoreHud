@@ -1,0 +1,66 @@
+#$$$$$$$\                                           $$$$$$\
+#$$  __$$\                                         $$  __$$\
+#$$ |  $$ | $$$$$$$\ $$\   $$\  $$$$$$$\  $$$$$$\  $$ /  \__|$$$$$$\  $$\   $$\
+#$$$$$$$  |$$  _____|$$ |  $$ |$$  _____|$$  __$$\ $$$$\    $$  __$$\ $$ |  $$ |
+#$$  ____/ \$$$$$$\  $$ |  $$ |$$ /      $$ /  $$ |$$  _|   $$$$$$$$ |$$ |  $$ |
+#$$ |       \____$$\ $$ |  $$ |$$ |      $$ |  $$ |$$ |     $$   ____|$$ |  $$ |
+#$$ |      $$$$$$$  |\$$$$$$$ |\$$$$$$$\ \$$$$$$  |$$ |     \$$$$$$$\ \$$$$$$  |
+#\__|      \_______/  \____$$ | \_______| \______/ \__|      \_______| \______/
+#                    $$\   $$ |
+#                    \$$$$$$  |
+#                     \______/
+# https://discord.gg/vanillamcbe
+# https://github.com/psycofeu
+
+refill: 10 # in secondes (10 are recommanded for lags)
+enable_disable_world: false
+disable_world: ["World", "World2"]
+enable_economy: true
+economy_plugin: "EconomyAPI" # vanillaEconomy | EconomyAPI | BedrockEconomy
+
+enable_rank: true
+rank_plugin: "PurePerm" #PurePerm | RankSysteme | SimpleRank
+
+enable_faction: true
+faction_plugin: "piggyfaction" #only piggy faction ;-;
+
+
+title: "Scoreboard"
+
+# {player_name} = pseudo of player
+# {player_rank} = rank of player (with rank plugin)
+# {faction_name} = faction name of player
+# {faction_power} = faction power of player
+# {faction_leader} = faction leader
+# {faction_name} = faction name of player
+# {faction_name} = faction name of player
+# {money} = player money
+# {online_player} = players online
+# {max_player} = max player online
+# {item_name} = item in hand name
+# {item_count} = item in hand count
+# {x} = player position X
+# {y} = player position Y
+# {z} = player position Z
+# {world} = player world
+# {load} = get ticks usage
+# {tps} = get ticks per second
+# {ip} = get player IP
+# {ping} = get ping
+# {health} = get player health
+# {max_health} = get player max health
+# {food} = get player food
+# {max_food} = get player max food
+# {xp_level} = get player xp level
+# {xp_progress} = get player xp progress
+# {total_xp} = get total player xp
+# {world_player_count} = get count of player world
+
+texte:
+  - "§aName: §f{player_name}"
+  - "§aRank: §f{player_rank}"
+  - "§aFaction: §f{faction}"
+  - "§aMoney: §f{money}"
+  - ""
+  - "§aOnline: §f{online_player}§a/§f{max_player}"
+  - "§aPing: §f{ping}"
