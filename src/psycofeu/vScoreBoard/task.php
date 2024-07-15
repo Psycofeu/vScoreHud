@@ -26,7 +26,7 @@ class task extends \pocketmine\scheduler\Task
 
         foreach ($onlinePlayers as $player) {
             if ($player->isConnected()) {
-                $this->sendDisplayObjectivePacket($player, $config->get("title"));
+                $this->sendDisplayObjectivePacket($player);
 
                 $linesValue = $config->get('texte');
                 foreach ($linesValue as $id => $line) {
@@ -39,11 +39,11 @@ class task extends \pocketmine\scheduler\Task
         }
     }
 
-    private function sendDisplayObjectivePacket(Player $player, string $title): void {
+    private function sendDisplayObjectivePacket(Player $player): void {
         $packet = SetDisplayObjectivePacket::create(
             SetDisplayObjectivePacket::DISPLAY_SLOT_SIDEBAR,
             $player->getName(),
-            $title,
+            Main::getInstance()->config->get("title"),
             "dummy",
             SetDisplayObjectivePacket::SORT_ORDER_ASCENDING
         );
@@ -75,31 +75,27 @@ class task extends \pocketmine\scheduler\Task
             "{world_player_count}" => count($player->getWorld()->getPlayers())
         ];
 
-        foreach ($replacements as $placeholder => $value) {
-            $line = str_replace($placeholder, $value, $line);
-        }
-
         if ($config->get("enable_economy")) {
             $line = $this->replaceEconomy($line, $player, strtolower($config->get("economy_plugin")));
         } else {
-            $line = str_replace("{money}", "§ceco off", $line);
+            $replacements["{money}"] = "§ceco off";
         }
 
         if ($config->get("enable_rank")) {
             $line = $this->replaceRank($line, $player, strtolower($config->get("rank_plugin")));
         } else {
-            $line = str_replace("{player_rank}", "§cnot Found", $line);
+            $replacements["{player_rank}"] = "§cnot Found";
         }
 
         if ($config->get("enable_faction") && strtolower($config->get("faction_plugin")) === "piggyfaction") {
             $line = $this->replaceFaction($line, $player);
         } else {
-            $line = str_replace("{faction_name}", "§cnot Found", $line);
-            $line = str_replace("{faction_power}", "§cnot Found", $line);
-            $line = str_replace("{faction_leader}", "§cnot Found", $line);
+            $replacements["{faction_name}"] = "§cnot Found";
+            $replacements["{faction_power}"] = "§cnot Found";
+            $replacements["{faction_leader}"] = "§cnot Found";
         }
 
-        return $line;
+        return strtr($line, $replacements);
     }
 
     private function replaceEconomy(string $line, Player $player, string $economyPlugin): string {
@@ -119,6 +115,7 @@ class task extends \pocketmine\scheduler\Task
         }
         return str_replace("{money}", $money, $line);
     }
+
     private function replaceRank(string $line, Player $player, string $rankPlugin): string {
         switch ($rankPlugin) {
             case "pureperm":
@@ -136,6 +133,7 @@ class task extends \pocketmine\scheduler\Task
         }
         return str_replace("{player_rank}", $rank, $line);
     }
+
     private function replaceFaction(string $line, Player $player): string {
         $faction = PiggyFactions::getInstance()->getPlayerManager()->getPlayerFaction($player->getUniqueId());
         if ($faction !== null) {
@@ -149,16 +147,29 @@ class task extends \pocketmine\scheduler\Task
         }
         return $line;
     }
+
     public function addLine(int $id, string $line, Player $player): void {
         $packet = new ScorePacketEntry();
         $packet->type = ScorePacketEntry::TYPE_FAKE_PLAYER;
+        if(isset($this->lines[$id])){
+            $pk = new SetScorePacket();
+            $pk->entries[] = $this->lines[$id];
+            $pk->type = SetScorePacket::TYPE_REMOVE;
+            $player->getNetworkSession()->sendDataPacket($pk);
+            unset($this->lines[$id]);
+        }
         $packet->score = $id;
         $packet->scoreboardId = $id;
         $packet->actorUniqueId = $player->getId();
         $packet->objectiveName = $player->getName();
         $packet->customName = $line;
-        $this->sendScorePacket($packet, $player);
+        $this->lines[$id] = $packet;
+        $pkt = new SetScorePacket();
+        $pkt->entries[] = $packet;
+        $pkt->type = SetScorePacket::TYPE_CHANGE;
+        $player->getNetworkSession()->sendDataPacket($pkt);
     }
+
     private function sendScorePacket(ScorePacketEntry $entry, Player $player): void {
         $packet = new SetScorePacket();
         $packet->entries[] = $entry;
