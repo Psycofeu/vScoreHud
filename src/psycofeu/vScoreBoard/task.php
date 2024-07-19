@@ -139,7 +139,7 @@ class task extends \pocketmine\scheduler\Task
         if ($faction !== null) {
             $line = str_replace("{faction_name}", $faction->getName(), $line);
             $line = str_replace("{faction_power}", $faction->getPower(), $line);
-            $line = str_replace("{faction_leader}", $faction->getLeader(), $line);
+            $line = str_replace("{faction_leader}", $faction->getLeader()->getUsername(), $line);
         } else {
             $line = str_replace("{faction_name}", "§cnot Found", $line);
             $line = str_replace("{faction_power}", "§cnot Found", $line);
